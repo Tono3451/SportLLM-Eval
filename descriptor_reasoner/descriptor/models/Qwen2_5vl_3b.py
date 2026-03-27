@@ -1,7 +1,13 @@
 import cv2
 import ollama
 
-def preparar_secuencia_video(video_path, num_frames=8, start_frame=0, end_frame=None):
+import time
+from colorama import init, Fore, Back, Style
+
+
+def prepare_video_sequence(video_path, num_frames=8, start_frame=0, end_frame=None):
+    start_time=time.perf_counter()
+
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
@@ -10,13 +16,13 @@ def preparar_secuencia_video(video_path, num_frames=8, start_frame=0, end_frame=
         
     start_frame = max(0, min(start_frame, total_frames - 1))
     
-    frames_en_segmento = max(0, end_frame - start_frame)
-    paso = frames_en_segmento // num_frames if frames_en_segmento > 0 else 1
+    frames_in_segment = max(0, end_frame - start_frame)
+    step = max(1, frames_in_segment // num_frames)
     
-    secuencia_imagenes = []
+    image_sequence = []
     
     for i in range(num_frames):
-        frame_idx = start_frame + (i * paso)
+        frame_idx = start_frame + (i * step)
         
         if frame_idx >= end_frame:
             break
@@ -27,14 +33,23 @@ def preparar_secuencia_video(video_path, num_frames=8, start_frame=0, end_frame=
         
         frame = cv2.resize(frame, (640, 480))
         _, buffer = cv2.imencode('.jpg', frame)
-        secuencia_imagenes.append(buffer.tobytes())
+        image_sequence.append(buffer.tobytes())
     
     cap.release()
-    return secuencia_imagenes
+
+    end_time=time.perf_counter()
+
+    tiempo_total = end_time - start_time
+
+    print(Back.YELLOW + Fore.BLACK + f"Sacar los frames tardó {tiempo_total:.4f} segundos")
+    return image_sequence
 
 def description(prompt, video_path, num_frames=8, start_frame=0, end_frame=None):
-    frames = preparar_secuencia_video(video_path, num_frames, start_frame, end_frame)
+    init(autoreset=True)
+    frames = prepare_video_sequence(video_path, num_frames, start_frame, end_frame)
 
+    print(Fore.BLUE + f"Cargando modelo de respuesta (Esto puede tardar varios segundos ...)")
+    start_time=time.perf_counter()
     response = ollama.chat(
         model='qwen2.5vl:3b',
         messages=[
@@ -49,5 +64,11 @@ def description(prompt, video_path, num_frames=8, start_frame=0, end_frame=None)
             }
         ]
     )
+
+    end_time=time.perf_counter()
+
+    tiempo_total = end_time - start_time
+
+    print(Back.YELLOW + Fore.BLACK + f"La respuesta del modelo tardó {tiempo_total:.4f} segundos")
 
     return response['message']['content']

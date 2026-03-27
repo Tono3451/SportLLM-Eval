@@ -9,7 +9,7 @@ def main():
     actionScorer = ActionScorer(
                                 r"C:\Users\Tono3451\tft-pruebas\video\057.avi",
                                 DescriptorModels.QWEN2_5VL_3B,
-                                None
+                                None,
                             )
 
     print(actionScorer.describeVideo(prompt))
