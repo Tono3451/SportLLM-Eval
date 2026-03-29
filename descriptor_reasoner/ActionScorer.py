@@ -9,12 +9,13 @@ from descriptor_reasoner.descriptor.DescriptorModels import DescriptorModels
 class ActionScorer():
     process = False
 
-    def __init__(self, videoUrl, descriptorModel, reasonerModel, secondsDescription=0, fps=8):
+    def __init__(self, videoUrl, descriptorModel, reasonerModel, secondsDescription=0, fps=8, maxPixelSize=640):
         self.videoUrl = videoUrl
         self.descriptorModel = descriptorModel
         self.reasonerModel = reasonerModel
         self.secondsDescription = secondsDescription
         self.fps = fps
+        self.maxPixelSize = maxPixelSize
 
     def scoreAction(self, showDescription=True):
         pass
@@ -24,13 +25,15 @@ class ActionScorer():
 
         #hilo_spinner = threading.Thread(target=self.showSpinner)
         #hilo_spinner.start()
-        print("_Descripción iniciada_")
+        print(f"Descripción iniciada: Segmentos de {self.secondsDescription} segundos, Frames por segmento {self.fps} ")
+
         return Descriptor.process(
                 model=self.descriptorModel, 
                 prompt=prompt, 
                 videoUrl=self.videoUrl,
+                maxSizePixel=self.maxPixelSize,
                 num_frames=self.fps,
-                batchSeconds=self.secondsDescription
+                batchSeconds=self.secondsDescription,
             )
 
         """try:

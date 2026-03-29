@@ -4,7 +4,7 @@ from descriptor_reasoner.descriptor.DescriptorModels import DescriptorModels
 
 class Descriptor:
     @staticmethod
-    def process(model: DescriptorModels, prompt: str, videoUrl: str, num_frames=8, batchSeconds=0):
+    def process(model: DescriptorModels, prompt: str, videoUrl: str , maxSizePixel: int, num_frames=8, batchSeconds=0):
         model_filename = model.value 
         
         try:
@@ -12,15 +12,15 @@ class Descriptor:
             
             # Procesamiento de todo el video
             if batchSeconds <= 0:
-                return modulo.description(prompt, videoUrl, num_frames)
+                return modulo.description(prompt, videoUrl, maxSizePixel, num_frames)
             
-            return Descriptor.process_video_segments(modulo, videoUrl, prompt, num_frames, batchSeconds)
+            return Descriptor.process_video_segments(modulo, videoUrl,  prompt, maxSizePixel, num_frames, batchSeconds)
                 
         except ImportError as e:
             raise ValueError(f"No se encontró el modelo '{model_filename}' en 'models/'. Error: {e}")
 
     @staticmethod    
-    def process_video_segments(modulo, videoUrl, prompt, num_frames, batchSeconds):
+    def process_video_segments(modulo, videoUrl, prompt, maxSizePixel, num_frames, batchSeconds):
         # Procesamiento del video por segmentos
         cap = cv2.VideoCapture(videoUrl)
         if not cap.isOpened():
@@ -43,10 +43,14 @@ class Descriptor:
             segment_desc = modulo.description(
                 prompt, 
                 videoUrl, 
+                maxSizePixel,
                 num_frames,
                 start_frame=start_frame, 
-                end_frame=end_frame
+                end_frame=end_frame,
             )
+
+            if prompt.enableHistory and hasattr(prompt, 'addDescription'):
+                prompt.addDescription(segment_desc)
             
             start_time = start_frame / fps
             end_time = end_frame / fps
