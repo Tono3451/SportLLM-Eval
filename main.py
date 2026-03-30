@@ -8,10 +8,10 @@ def main():
 
     actionScorer = ActionScorer(
                                 r"C:\Users\Tono3451\tft-pruebas\video\057.mp4",
-                                DescriptorModels.QWEN2_5VL_3B,
+                                DescriptorModels.LLAVA_7B,
                                 None,
-                                2,
-                                0,
+                                3,
+                                16,
                                 320
                             )
 

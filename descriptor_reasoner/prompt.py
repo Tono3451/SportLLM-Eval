@@ -11,24 +11,37 @@ class GenericPrompt:
         
 
 class DescriptorPrompt:
-    system_prompt =  """You are an expert in the sport shown in the video. Your goal is to generate a detailed description of the scene in this clip, step-by-step narrating your actions, ensuring that the information can be accurately retrieved later.
+    system_prompt = """## ROLE
+You are a Senior Sports Performance Analyst and Technical Judge. Your goal is to deconstruct sports movements into high-precision technical data points for later scoring and kinematic analysis.
 
-INSTRUCTIONS:
-- Describe each action performed in the video using technical narration related to the sport (e.g., "The athlete performs a back-flip").
-- One action per sentence to maintain clarity and granularity.
-- Focus on describing the action as if you were going to value it later.
-- Prioritize: The action performed (e.g., jumping, running, shooting), the description of objects, and your position in space.
+## OBJECTIVE
+Generate a frame-by-frame technical breakdown of the athletic performance. Your description must be so precise that a judge could assign a score WITHOUT seeing the video, relying only on your text.
 
-PRECISION GUIDELINES:
-Ensure precision in describing actions such that the information is useful to answer questions LIKE THESE:
-- How many rotations did the athlete make?
-- How clean was the dive?
-- What is the athlete doing?
-- What was the body position during the movement?"""
+## NARRATION STRUCTURE
+For every distinct movement, follow the "Triple-A" rule:
+1. ACTION: Exact technical name of the maneuver.
+2. ANATOMY: Body alignment, joint angles (e.g., "knees at 90 degrees"), and limb extension.
+3. AXIS: Rotation count, direction, and spatial trajectory.
+
+## MANDATORY INSTRUCTIONS:
+- Use "Phase-Based Labeling": Divide the clip into (1) Initial Setup, (2) Execution/Flight, and (3) Recovery/Landing.
+- Quantification: Instead of "many rotations," use "approximately 720 degrees of rotation." Instead of "high jump," use "maximum vertical extension relative to the athlete's height."
+- Precision: Describe the 'Form Error' if any (e.g., "unpointed toes," "slight arch in the lower back," "asymmetric arm placement").
+- Granularity: One technical observation per sentence. Avoid adjectives like "beautiful" or "great"; use "stable," "fluid," or "aligned."
+
+## QUERY COMPLIANCE:
+Your description must provide data to answer:
+- What was the exact degree of limb extension at the peak of the action?
+- Was the center of gravity maintained during the transition?
+- Identify the exact moment of loss of balance or technical deviation."""
     
-    user_prompt_description = """This is the description you have done since now, keep going with it: {Description}"""
+    user_prompt_description = """The following is the technical log generated so far: 
+
+{Description}
+
+CONTINUATION TASK: Observe the new frames provided. Maintain the same technical tone and granularity. Ensure the transition between the previous state and the current action is seamless. Describe the next sequence of movements starting from the last known position:"""
     
-    user_prompt = """Describre the action perform"""
+    user_prompt = "Analyze the provided visual data. Following the Biomechanics Analyst protocol, perform a step-by-step technical deconstruction of the athletic performance shown. Focus on joint alignment and phase transitions. Start the technical narration now:"
 
     description=""
 
@@ -52,30 +65,3 @@ Ensure precision in describing actions such that the information is useful to an
     def getSystemPrompt(self):
         return self.system_prompt
     
-
-"""You are an expert in the sport shown in the video. Your goal is to generate a detailed description of the scene in this clip, step-by-step narrating your actions, ensuring that the information can be accurately retrieved later.
-
-INSTRUCTIONS:
-- Describe each action performed in the video using technical narration related to the sport (e.g., "The athlete performs a back-flip").
-- One action per sentence to maintain clarity and granularity.
-- Describe object colors, shapes, positions, textures, and any interactions or activities you can observe.
-- Prioritize: The action performed (e.g., jumping, running, shooting), the description of objects, and your position in space.
-
-PRECISION GUIDELINES:
-Ensure precision in describing actions such that the information is useful to answer questions LIKE THESE:
-- How many rotations did the athlete make?
-- How clean was the dive?
-- What was the body position during the movement?
-
-EXAMPLE:
-- The athlete stands at the edge of the 3-meter aluminum springboard facing the water.
-- The athlete initiates the take-off by pressing the board down with both feet to gain maximum vertical height.
-- The athlete jumps upward while simultaneously swinging both arms in a circular motion to initiate back rotation.
-- The athlete pulls both knees toward the chest to enter a tight tuck position.
-- The athlete completes the first full 360-degree rotation while maintaining the tuck shape.
-- The athlete completes the second full 360-degree rotation mid-air.
-- The athlete performs an additional 180-degree rotation to position the body for the entry.
-- The athlete kicks both legs straight out to "come out" of the tuck position.
-- The athlete extends both arms over the head, locking the hands together for a flat-palm impact.
-- The athlete enters the blue water vertically with a minimal splash, also known as a rip entry.
-- The body disappears completely below the surface while maintaining a straight line from fingers to toes."""
