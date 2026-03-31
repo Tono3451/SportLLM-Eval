@@ -3,6 +3,7 @@ import time
 import threading
 import itertools
 from descriptor_reasoner.descriptor.Descriptor import Descriptor
+from descriptor_reasoner.reasoner.Reasoner import Reasoner
 from descriptor_reasoner.descriptor.DescriptorModels import DescriptorModels
 
 
@@ -17,14 +18,15 @@ class ActionScorer():
         self.fps = fps
         self.maxPixelSize = maxPixelSize
 
-    def scoreAction(self, showDescription=True):
-        pass
+    def scoreAction(self, descriptor_prompt, reasoner_prompt, showDescription=True):
+        description = self.describeVideo(descriptor_prompt)
+
+        if (showDescription): 
+            print(description)
+
+        return self.reasonDescription(reasoner_prompt, description)
 
     def describeVideo(self, prompt):
-        #ActionScorer.process = True 
-
-        #hilo_spinner = threading.Thread(target=self.showSpinner)
-        #hilo_spinner.start()
         print(f"Descripción iniciada: Segmentos de {self.secondsDescription} segundos, Frames por segmento {self.fps} ")
 
         return Descriptor.process(
@@ -36,21 +38,12 @@ class ActionScorer():
                 batchSeconds=self.secondsDescription,
             )
 
-        """try:
-            return Descriptor.procesar(
-                model=self.descriptorModel, 
-                prompt=prompt, 
-                videoUrl=self.videoUrl
-            )
-        finally:
-            # 3. Importante: nos aseguramos de detener el spinner pase lo que pase (incluso si hay error)
-            self.process = False
-            hilo_spinner.join()"""
-
-        
-
-    def reasonDescription(self):
-        pass
+    def reasonDescription(self, prompt, description):
+        return Reasoner.process(
+            model=self.reasonerModel,
+            prompt=prompt,
+            description=description
+        )
 
 
     @classmethod

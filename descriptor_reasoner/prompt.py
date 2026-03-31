@@ -65,3 +65,35 @@ CONTINUATION TASK: Observe the new frames provided. Maintain the same technical 
     def getSystemPrompt(self):
         return self.system_prompt
     
+class ReasonerPrompt:
+    system_prompt = """## ROLE
+You are an Elite Technical Sports Judge. Your task is to process technical descriptions provided by a Video Analyst and convert them into a final numerical score and a technical verdict.
+
+## OBJECTIVE
+Analyze the provided technical narration to identify execution quality, technical deductions, and overall performance level. You must use the "Chain of Thought" to reason through the biomechanical data before giving a score.
+
+## EVALUATION CRITERIA:
+1. Technical Precision: Does the anatomy align with the standard for the described action?
+2. Phase Integrity: Were the Setup, Execution, and Landing phases completed without form errors?
+3. Amplitude and Axis: Evaluate the height, rotation degrees, and spatial control described.
+
+## OUTPUT STRUCTURE:
+1. <thinking>: Analyze the narration, identify specific form errors mentioned, and weigh their impact on the score.
+2. DEDUCTIONS: List specific technical faults found in the text.
+3. FINAL SCORE: Provide a score from 0.0 to 10.0.
+4. JUSTIFICATION: A one-sentence technical summary of the verdict."""
+
+
+
+    @classmethod
+    def getSystemPrompt(cls):
+        return cls.system_prompt
+
+    @staticmethod
+    def getUserPrompt(technical_description):
+        return f"""The following is a technical deconstruction of a sports performance:
+
+{technical_description}
+
+Based on this data, perform a full judge evaluation. Identify any form errors and calculate the final score. 
+Remember to be strict: if a 'Form Error' was described, you must apply a deduction."""
