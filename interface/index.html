@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visor JSONL de Evaluacion</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>Visor de Resultados JSONL</h1>
+      <p>Tabla de videos con descripcion, razonamiento+score y score real.</p>
+    </header>
+
+    <section class="toolbar">
+      <select id="results-select" class="results-select">
+        <option value="">Cargando archivos...</option>
+      </select>
+      <label class="file-input-label" for="file-input">Abrir JSONL...</label>
+      <input id="file-input" type="file" accept=".jsonl,.txt" />
+      <button id="reload-results" type="button">Recargar lista</button>
+      <button id="export-real-scores" type="button">Exportar score real (CSV)</button>
+      <span id="status" class="status">Sin datos cargados</span>
+    </section>
+
+    <section class="table-wrapper">
+      <table id="results-table">
+        <thead>
+          <tr>
+            <th>Ruta del video</th>
+            <th>Descripcion</th>
+            <th>Razonamiento + score</th>
+            <th>Score real</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

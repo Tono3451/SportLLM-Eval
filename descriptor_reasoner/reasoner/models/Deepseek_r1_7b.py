@@ -9,12 +9,15 @@ def reasoner(prompt, description):
     print(Fore.GREEN + f"Generando puntuación (Esto puede tardar varios segundos ...)")
     start_time=time.perf_counter()
     response = ollama.chat(
-    model='deepseek-r1:7b',
-    messages=[
-        {'role': 'system', 'content': prompt.getSystemPrompt()},
-        {'role': 'user', 'content': prompt.getUserPrompt(description)}
-    ]
-)
+        model='deepseek-r1:7b',
+        messages=[
+            {'role': 'system', 'content': prompt.getSystemPrompt()},
+            {'role': 'user', 'content': prompt.getUserPrompt(description)}
+        ],
+        options={
+            'num_ctx': 8192
+        }
+    )
 
     end_time=time.perf_counter()
 

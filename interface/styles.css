@@ -1,0 +1,142 @@
+:root {
+  --bg: #f7f4ef;
+  --card: #fffdf8;
+  --line: #ded7cb;
+  --text: #1f1b16;
+  --muted: #6f6558;
+  --accent: #005f73;
+  --accent-2: #0a9396;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, #ffe8c2 0%, transparent 40%),
+    radial-gradient(circle at 90% 100%, #ccf2ef 0%, transparent 35%),
+    var(--bg);
+}
+
+.app {
+  width: min(1600px, 95vw);
+  margin: 24px auto;
+  padding: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+
+.app-header p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.toolbar {
+  margin: 18px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+button,
+.file-input-label,
+.results-select {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 9px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+  font-size: 0.92rem;
+}
+
+.results-select {
+  min-width: 260px;
+  appearance: none;
+}
+
+button:hover,
+.file-input-label:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+#file-input {
+  display: none;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.table-wrapper {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1100px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f0ebe2;
+  text-align: left;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+td pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.video-path {
+  font-size: 0.85rem;
+  color: #234;
+}
+
+.real-score-input {
+  width: 90px;
+  padding: 7px;
+  border: 1px solid #bdb6a9;
+  border-radius: 7px;
+  font-size: 0.92rem;
+}
+
+@media (max-width: 900px) {
+  .app {
+    width: 98vw;
+    margin: 10px auto;
+    padding: 10px;
+  }
+}

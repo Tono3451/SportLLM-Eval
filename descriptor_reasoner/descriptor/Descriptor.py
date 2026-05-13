@@ -60,6 +60,6 @@ class Descriptor:
             )
             
             segment_number += 1
-        
+
         unified_description = "\n\n".join(all_descriptions)
         return unified_description

@@ -4,96 +4,92 @@ class GenericPrompt:
         self.user = user
 
     def getUserPrompt(self):
-        return self.system
+        return self.user
     
     def getSystemPrompt(self):
-        return self.user
+        return self.system
         
 
 class DescriptorPrompt:
-    system_prompt = """## ROLE
-You are a Senior Sports Performance Analyst and Technical Judge. Your goal is to deconstruct sports movements into high-precision technical data points for later scoring and kinematic analysis.
-
-## OBJECTIVE
-Generate a frame-by-frame technical breakdown of the athletic performance. Your description must be so precise that a judge could assign a score WITHOUT seeing the video, relying only on your text.
-
-## NARRATION STRUCTURE
-For every distinct movement, follow the "Triple-A" rule:
-1. ACTION: Exact technical name of the maneuver.
-2. ANATOMY: Body alignment, joint angles (e.g., "knees at 90 degrees"), and limb extension.
-3. AXIS: Rotation count, direction, and spatial trajectory.
-
-## MANDATORY INSTRUCTIONS:
-- Use "Phase-Based Labeling": Divide the clip into (1) Initial Setup, (2) Execution/Flight, and (3) Recovery/Landing.
-- Quantification: Instead of "many rotations," use "approximately 720 degrees of rotation." Instead of "high jump," use "maximum vertical extension relative to the athlete's height."
-- Precision: Describe the 'Form Error' if any (e.g., "unpointed toes," "slight arch in the lower back," "asymmetric arm placement").
-- Granularity: One technical observation per sentence. Avoid adjectives like "beautiful" or "great"; use "stable," "fluid," or "aligned."
-
-## QUERY COMPLIANCE:
-Your description must provide data to answer:
-- What was the exact degree of limb extension at the peak of the action?
-- Was the center of gravity maintained during the transition?
-- Identify the exact moment of loss of balance or technical deviation."""
-    
-    user_prompt_description = """The following is the technical log generated so far: 
-
-{Description}
-
-CONTINUATION TASK: Observe the new frames provided. Maintain the same technical tone and granularity. Ensure the transition between the previous state and the current action is seamless. Describe the next sequence of movements starting from the last known position:"""
-    
-    user_prompt = "Analyze the provided visual data. Following the Biomechanics Analyst protocol, perform a step-by-step technical deconstruction of the athletic performance shown. Focus on joint alignment and phase transitions. Start the technical narration now:"
-
-    description=""
-
-    def __init__(self, enableHistory):
+    def __init__(self, enableHistory, sport_config):
         self.enableHistory = enableHistory
+        self.sport_config = sport_config
+        self.description = []
 
     def addDescription(self, description):
-        self.description += f"\n"
-        self.description += description
+        self.description.append(str(description))
+        if len(self.description) > 3:
+            self.description = self.description[-3:]
 
     def getUserPrompt(self):
-        if (self.enableHistory):
-            temp = self.user_prompt_description.format(
-                Description=self.description
+        if self.enableHistory and self.description:
+            history_text = "\n\n".join(self.description)
+            return (
+                "Technical history from previous segments:\n"
+                f"{history_text}\n\n"
+                "Analyze the current frames and continue the technical narration from the last known body state."
+                " Be strict: if execution quality appears inconsistent, explicitly state it."
             )
-        else:
-            temp = self.user_prompt
 
-        return temp
+        return (
+            "Analyze the current frames and provide a precise, strict technical narration."
+            " Prioritize objective quality assessment over generic wording."
+        )
     
     def getSystemPrompt(self):
-        return self.system_prompt
+        descriptor_focus = ", ".join(self.sport_config.descriptor_focus)
+
+        return (
+            "You are a senior sports biomechanical analyst.\n"
+            f"Sport: {self.sport_config.display_name} ({self.sport_config.key}).\n"
+            f"Focus areas: {descriptor_focus}.\n"
+            "Describe only what can be inferred from frames. If uncertain, state uncertainty explicitly.\n"
+            "Use a strict evaluative tone: highlight deviations, instability, poor control, timing errors, and incomplete execution whenever present.\n"
+            "Do not soften technical issues with vague language.\n"
+            "Use this structure:\n"
+            "1) Action\n"
+            "2) Setup phase\n"
+            "3) Execution/flight phase\n"
+            "4) Recovery/landing phase\n"
+            "5) Quality issues and deviations from ideal execution\n"
+            "6) Key measurable cues (angles, rotation, balance, timing when possible)\n"
+            "7) Difficulty of the action\n"
+            "If visual evidence is weak, explicitly mark confidence as low and explain why."
+        )
     
 class ReasonerPrompt:
-    system_prompt = """## ROLE
-You are an Elite Technical Sports Judge. Your task is to process technical descriptions provided by a Video Analyst and convert them into a final numerical score and a technical verdict.
+    def __init__(self, sport_config):
+        self.sport_config = sport_config
 
-## OBJECTIVE
-Analyze the provided technical narration to identify execution quality, technical deductions, and overall performance level. You must use the "Chain of Thought" to reason through the biomechanical data before giving a score.
+    def getSystemPrompt(self):
+        max_score = self.sport_config.max_score
+        criteria_weights = ", ".join(
+            f"{key}: {value}"
+            for key, value in self.sport_config.criteria_weights.items()
+        )
 
-## EVALUATION CRITERIA:
-1. Technical Precision: Does the anatomy align with the standard for the described action?
-2. Phase Integrity: Were the Setup, Execution, and Landing phases completed without form errors?
-3. Amplitude and Axis: Evaluate the height, rotation degrees, and spatial control described.
+        return (
+            "You are an elite technical sports judge.\n"
+            f"Sport: {self.sport_config.display_name} ({self.sport_config.key}).\n"
+            f"Rubric version: {self.sport_config.rubric_version}.\n"
+            f"Max score: {max_score}.\n"
+            f"Criteria weights: {criteria_weights}.\n"
+            "Output format (plain text):\n"
+            "- ASSESSMENT BY PHASE: short bullets for setup, execution/flight, and recovery/landing\n"
+            "- WEIGHTED RATIONALE: concise explanation of how the criteria influenced the result\n"
+            f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
+            "- JUSTIFICATION: one concise technical paragraph\n"
+            "Scoring strictness rules:\n"
+            "- Score holistically from the description quality and technical evidence, not from a fixed fault checklist.\n"
+            "- Be demanding: near-maximum scores are only for clearly exceptional execution across all phases.\n"
+            "- Any instability, inconsistency, weak control, incomplete positions, or low-confidence evidence should reduce the score meaningfully.\n"
+            "- Avoid inflated scores when the description contains ambiguity or missing evidence.\n"
+            "- Keep the scoring realistic and discriminative across average, good, and excellent performances."
+        )
 
-## OUTPUT STRUCTURE:
-1. <thinking>: Analyze the narration, identify specific form errors mentioned, and weigh their impact on the score.
-2. DEDUCTIONS: List specific technical faults found in the text.
-3. FINAL SCORE: Provide a score from 0.0 to 10.0.
-4. JUSTIFICATION: A one-sentence technical summary of the verdict."""
-
-
-
-    @classmethod
-    def getSystemPrompt(cls):
-        return cls.system_prompt
-
-    @staticmethod
-    def getUserPrompt(technical_description):
-        return f"""The following is a technical deconstruction of a sports performance:
-
-{technical_description}
-
-Based on this data, perform a full judge evaluation. Identify any form errors and calculate the final score. 
-Remember to be strict: if a 'Form Error' was described, you must apply a deduction."""
+    def getUserPrompt(self, technical_description):
+        return (
+            "Technical descriptor:\n"
+            f"{technical_description}\n\n"
+            "Evaluate the performance using the configured sport rubric and provide phase assessment, weighted rationale, final score and justification."
+        )
