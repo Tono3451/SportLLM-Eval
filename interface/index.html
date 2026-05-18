@@ -24,21 +24,46 @@
       <span id="status" class="status">Sin datos cargados</span>
     </section>
 
-    <section class="table-wrapper">
-      <table id="results-table">
-        <thead>
-          <tr>
-            <th>Ruta del video</th>
-            <th>Descripcion</th>
-            <th>Razonamiento + score</th>
-            <th>Score real</th>
-          </tr>
-        </thead>
-        <tbody id="results-body"></tbody>
-      </table>
+    <section class="tabs">
+      <div class="tab-buttons" role="tablist">
+        <button class="tab-button active" data-tab="raw">Entradas (JSONL)</button>
+        <button class="tab-button" data-tab="comparison">Comparación puntuaciones</button>
+      </div>
+
+      <div class="tab-panel" id="tab-raw">
+        <div class="table-wrapper">
+          <table id="results-table">
+            <thead>
+              <tr>
+                <th>Ruta del video</th>
+                <th>Salida Descriptor</th>
+                <th>Puntuación Reasoner</th>
+                <th>Score real</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel hidden" id="tab-comparison">
+        <div class="comparison-header">
+          <div>
+            <button id="export-comparison" type="button">Exportar comparación (CSV)</button>
+            <button id="rebuild-comparison" type="button">Actualizar gráfico</button>
+          </div>
+          <div id="comparison-stats" class="comparison-stats">Sin datos</div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="scores-chart" width="800" height="400"></canvas>
+          <div class="chart-zoom-info" id="chart-zoom-info">Zoom: 1x | Rueda para zoom | Arrastra para mover | Doble-click para reiniciar</div>
+        </div>
+        <div class="comparison-note">Puntos: eje X = Score real, eje Y = Score sacado. Línea diagonal = igualdad.</div>
+      </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 [
   {
-    "file_name": "clavados1.jsonl",
-    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados1.jsonl",
-    "label": "clavados1"
+    "file_name": "clavados_memory_2_24.jsonl",
+    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados_memory_2_24.jsonl",
+    "label": "clavados_memory_2_24"
   },
   {
-    "file_name": "clavados2.jsonl",
-    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados2.jsonl",
-    "label": "clavados2"
+    "file_name": "clavados_no_memory_4_16.jsonl",
+    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados_no_memory_4_16.jsonl",
+    "label": "clavados_no_memory_4_16"
   },
   {
-    "file_name": "clavados3.jsonl",
-    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados3.jsonl",
-    "label": "clavados3"
+    "file_name": "clavados_no_memory_4_24.jsonl",
+    "file_path": "C:/Users/Tono3451/tft-pruebas/results/clavados_no_memory_4_24.jsonl",
+    "label": "clavados_no_memory_4_24"
   }
 ]
