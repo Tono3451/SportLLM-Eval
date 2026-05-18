@@ -26,7 +26,6 @@ class FileProcessor:
 		if isinstance(score, dict):
 			record["reasoner_json"] = score
 			record["score_final_num"] = score.get("score_final")
-			record["rubric_version"] = score.get("rubric_version")
 			if not record.get("sport"):
 				record["sport"] = score.get("sport")
 

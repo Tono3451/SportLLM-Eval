@@ -1,67 +1,33 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 @dataclass(frozen=True)
 class SportConfig:
     key: str
     display_name: str
-    rubric_version: str
     max_score: float
-    criteria_weights: Dict[str, float]
     descriptor_focus: List[str]
+    criteria_weights: Optional[Dict[str, float]] = None
 
 
 class SportsCatalog:
     _sports: Dict[str, SportConfig] = {
-        "gimnasia_artistica": SportConfig(
-            key="gimnasia_artistica",
-            display_name="Artistic Gymnastics",
-            rubric_version="1.0",
-            max_score=100.0,
-            criteria_weights={
-                "technique": 0.45,
-                "execution": 0.35,
-                "landing": 0.20,
-            },
-            descriptor_focus=[
-                "joint alignment",
-                "rotation axis control",
-                "landing quality",
-            ],
-        ),
         "clavados": SportConfig(
             key="clavados",
             display_name="Diving",
-            rubric_version="1.0",
             max_score=100.0,
-            criteria_weights={
-                "takeoff": 0.25,
-                "flight": 0.45,
-                "entry": 0.30,
-            },
             descriptor_focus=[
-                "takeoff height and control",
-                "body form during flight",
-                "entry verticality and splash control",
+                "approach and hurdle: control, balance, and takeoff technique",
+                "impulse generation: efficient use of springboard or platform",
+                "height and distance: sufficient elevation and safe separation from board/platform",
+                "aerial execution: body shape quality (straight, pike, tuck)",
+                "aerial execution: clean twists and somersaults",
+                "aerial execution: full control of movement from takeoff to entry",
+                "water entry: vertical alignment",
+                "water entry: minimal splash",
             ],
-        ),
-        "patinaje_artistico": SportConfig(
-            key="patinaje_artistico",
-            display_name="Figure Skating",
-            rubric_version="1.0",
-            max_score=100.0,
-            criteria_weights={
-                "technique": 0.50,
-                "stability": 0.30,
-                "control": 0.20,
-            },
-            descriptor_focus=[
-                "jump entry and exit",
-                "axis alignment during spins",
-                "landing stability",
-            ],
-        ),
+        )
     }
 
     @classmethod

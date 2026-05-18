@@ -2,8 +2,10 @@ import cv2
 
 import time
 from colorama import init, Fore, Back, Style
+from typing import List, Optional, Tuple
 
-def get_frames_context(video_path, maxSizePixel, num_frames=8, start_frame=0, end_frame=None):
+def get_frames_context(video_path: str, maxSizePixel: int, num_frames: int = 8, start_frame: int = 0, end_frame: Optional[int] = None) -> List[bytes]:
+
     start_time=time.perf_counter()
 
     # Preámbulo
@@ -60,7 +62,7 @@ def get_frames_context(video_path, maxSizePixel, num_frames=8, start_frame=0, en
     
     return image_sequence
 
-def _resize_calculation(maxSize, h, w):
+def _resize_calculation(maxSize: int, h: int, w: int) -> Tuple[int, int]:
     #print(Back.GREEN + f"Valores reales - w: {w}, h: {h}, max size: {maxSize}")
     max_dim = maxSize
         
@@ -79,6 +81,5 @@ def _resize_calculation(maxSize, h, w):
     
     return base_h, base_w
 
-def _round_to_multiple(num, base):
-    return round(num/base) * base
-
+def _round_to_multiple(num: float, base: int) -> int:
+    return int(round(num / base) * base)

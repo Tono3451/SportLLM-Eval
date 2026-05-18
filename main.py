@@ -10,26 +10,29 @@ import re
 
 SPORT_KEY = "clavados"
 
-# Modos disponibles: "single", "all", "subset", "range"
-PROCESS_MODE = "range"
+# "single", "all", "subset", "range"
+PROCESS_MODE = "single"
 
-VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\001.avi"
+VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\020.avi"
 VIDEO_DIRECTORY = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori"
 SUBSET_INDICES = [1, 2, 3]
-START_INDEX = 1
-END_INDEX = 4
+START_INDEX = 10
+END_INDEX = 20
 
-OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados3.jsonl"
+OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_no_memory_4_24.jsonl"
 MAT_FILE_PATH = r"D:\clase\tft\dataset\diving\diving\diving_overall_scores.mat"
 MAT_SCORE_INDEX = None
 
 DESCRIPTOR_MODEL = DescriptorModels.QWEN2_5VL_3B
 REASONER_MODEL = ReasonerModels.DEEPSEEK_R1_7B
-DESCRIPTION_SECONDS = 2
+DESCRIPTION_SECONDS = 4
 FRAMES_PER_SEGMENT = 24
 MAX_PIXEL_SIZE = 448
 
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm"}
+
+ACTIVATE_MEMORY = False
+ACTIVATE_ONLY_SCORE = True
 
 
 def extract_video_index(video_path: Path) -> int | None:
@@ -120,8 +123,8 @@ def main():
 
     with FileProcessor(OUTPUT_FILE) as file_processor:
         for video_path in videos:
-            descriptor_prompt = DescriptorPrompt(True, sport_config)
-            reason_prompt = ReasonerPrompt(sport_config)
+            descriptor_prompt = DescriptorPrompt(ACTIVATE_MEMORY, sport_config)
+            reason_prompt = ReasonerPrompt(sport_config, ACTIVATE_ONLY_SCORE)
 
             action_scorer = ActionScorer(
                 str(video_path),

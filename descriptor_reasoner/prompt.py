@@ -58,27 +58,26 @@ class DescriptorPrompt:
         )
     
 class ReasonerPrompt:
-    def __init__(self, sport_config):
+    def __init__(self, sport_config, score_only=False):
         self.sport_config = sport_config
+        self.score_only = score_only
 
     def getSystemPrompt(self):
         max_score = self.sport_config.max_score
-        criteria_weights = ", ".join(
-            f"{key}: {value}"
-            for key, value in self.sport_config.criteria_weights.items()
-        )
+        criteria_weights = self.sport_config.criteria_weights
+        criteria_line = ""
+        if criteria_weights:
+            formatted_weights = ", ".join(
+                f"{key}: {value}"
+                for key, value in criteria_weights.items()
+            )
+            criteria_line = f"Criteria weights: {formatted_weights}.\n"
 
-        return (
+        common_header = (
             "You are an elite technical sports judge.\n"
             f"Sport: {self.sport_config.display_name} ({self.sport_config.key}).\n"
-            f"Rubric version: {self.sport_config.rubric_version}.\n"
             f"Max score: {max_score}.\n"
-            f"Criteria weights: {criteria_weights}.\n"
-            "Output format (plain text):\n"
-            "- ASSESSMENT BY PHASE: short bullets for setup, execution/flight, and recovery/landing\n"
-            "- WEIGHTED RATIONALE: concise explanation of how the criteria influenced the result\n"
-            f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
-            "- JUSTIFICATION: one concise technical paragraph\n"
+            f"{criteria_line}"
             "Scoring strictness rules:\n"
             "- Score holistically from the description quality and technical evidence, not from a fixed fault checklist.\n"
             "- Be demanding: near-maximum scores are only for clearly exceptional execution across all phases.\n"
@@ -87,9 +86,35 @@ class ReasonerPrompt:
             "- Keep the scoring realistic and discriminative across average, good, and excellent performances."
         )
 
+        if not self.score_only:
+            return (
+                f"{common_header}\n"
+                "Output format (plain text):\n"
+                "- ASSESSMENT BY PHASE: short bullets for setup, execution/flight, and recovery/landing\n"
+                "- SCORING RATIONALE: concise explanation of how the observed quality led to the score\n"
+                f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
+                "- JUSTIFICATION: one concise technical paragraph"
+            )
+
+        return (
+            f"{common_header}\n"
+            "Final output requirement (strict):\n"
+            "- Output ONLY the final numeric score.\n"
+            "- Use comma as decimal separator (example: 87,5).\n"
+            "- Do not include labels, explanations, symbols, or extra text."
+        )
+
     def getUserPrompt(self, technical_description):
+        if self.score_only:
+            return (
+                "Technical descriptor:\n"
+                f"{technical_description}\n\n"
+                "Evaluate the performance using the configured sport rubric."
+                " Return ONLY the final score using comma as decimal separator."
+            )
+
         return (
             "Technical descriptor:\n"
             f"{technical_description}\n\n"
-            "Evaluate the performance using the configured sport rubric and provide phase assessment, weighted rationale, final score and justification."
+            "Evaluate the performance using the configured sport rubric and provide phase assessment, scoring rationale, final score and justification."
         )
