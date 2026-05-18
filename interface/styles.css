@@ -193,11 +193,3 @@ td pre {
   border-radius: 7px;
   font-size: 0.92rem;
 }
-
-@media (max-width: 900px) {
-  .app {
-    width: 98vw;
-    margin: 10px auto;
-    padding: 10px;
-  }
-}
