@@ -28,12 +28,15 @@ class DescriptorPrompt:
                 "Technical history from previous segments:\n"
                 f"{history_text}\n\n"
                 "Analyze the current frames and continue the technical narration from the last known body state."
-                " Be strict: if execution quality appears inconsistent, explicitly state it."
+                "Be strict: if execution quality appears inconsistent, explicitly state it."
+                "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown."
             )
 
         return (
             "Analyze the current frames and provide a precise, strict technical narration."
-            " Prioritize objective quality assessment over generic wording."
+            "Prioritize objective quality assessment over generic wording."
+            "Be strict: if execution quality appears inconsistent, explicitly state it."
+            "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown."
         )
     
     def getSystemPrompt(self):
@@ -110,7 +113,7 @@ class ReasonerPrompt:
                 "Technical descriptor:\n"
                 f"{technical_description}\n\n"
                 "Evaluate the performance using the configured sport rubric."
-                " Return ONLY the final score using comma as decimal separator."
+                "IMPORTANT: Return ONLY the final score using comma as decimal separator."
             )
 
         return (

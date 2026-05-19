@@ -7,25 +7,26 @@ from descriptor_reasoner.utilities.MatProcessor import MatProcessor
 from descriptor_reasoner.utilities.FileProcessor import FileProcessor
 from pathlib import Path
 import re
+import multiprocessing
 
+# ===== Zona de opciones =====
 SPORT_KEY = "clavados"
 
-# "single", "all", "subset", "range"
-PROCESS_MODE = "single"
+PROCESS_MODE = "range"
 
-VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\020.avi"
+VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\010.avi"
 VIDEO_DIRECTORY = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori"
 SUBSET_INDICES = [1, 2, 3]
 START_INDEX = 10
 END_INDEX = 20
 
-OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_no_memory_4_24.jsonl"
+OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_no_memory_2_24.jsonl"
 MAT_FILE_PATH = r"D:\clase\tft\dataset\diving\diving\diving_overall_scores.mat"
 MAT_SCORE_INDEX = None
 
 DESCRIPTOR_MODEL = DescriptorModels.QWEN2_5VL_3B
 REASONER_MODEL = ReasonerModels.DEEPSEEK_R1_7B
-DESCRIPTION_SECONDS = 4
+DESCRIPTION_SECONDS = 2
 FRAMES_PER_SEGMENT = 24
 MAX_PIXEL_SIZE = 448
 
@@ -33,7 +34,7 @@ VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm"}
 
 ACTIVATE_MEMORY = False
 ACTIVATE_ONLY_SCORE = True
-
+# ===== Zona de opciones =====
 
 def extract_video_index(video_path: Path) -> int | None:
     stem = video_path.stem.strip()
@@ -108,6 +109,32 @@ def resolve_real_score_index(video_path: Path) -> int | None:
     return extract_video_index(video_path)
 
 
+def process_single_video(video_path: Path, sport_config):
+    with FileProcessor(OUTPUT_FILE) as file_processor:
+        descriptor_prompt = DescriptorPrompt(ACTIVATE_MEMORY, sport_config)
+        reason_prompt = ReasonerPrompt(sport_config, ACTIVATE_ONLY_SCORE)
+
+        action_scorer = ActionScorer(
+            str(video_path),
+            DESCRIPTOR_MODEL,
+            REASONER_MODEL,
+            DESCRIPTION_SECONDS,
+            FRAMES_PER_SEGMENT,
+            MAX_PIXEL_SIZE,
+        )
+
+        description = action_scorer.describeVideo(descriptor_prompt)
+        score = action_scorer.reasonDescription(reason_prompt, description)
+
+        mat_index = resolve_real_score_index(video_path)
+        real_score = 0.0
+        if MAT_FILE_PATH and mat_index is not None:
+            real_score = MatProcessor.get_score(MAT_FILE_PATH, mat_index)
+
+        file_processor.add_video_result(str(video_path), description, score, real_score)
+        print(f"Procesado: {video_path.name} | indice MAT: {mat_index} | real score: {real_score}")
+
+
 def main():
     try:
         sport_config = SportsCatalog.get(SPORT_KEY)
@@ -121,30 +148,14 @@ def main():
         print("No se encontraron videos para procesar con la configuracion actual")
         return
 
-    with FileProcessor(OUTPUT_FILE) as file_processor:
-        for video_path in videos:
-            descriptor_prompt = DescriptorPrompt(ACTIVATE_MEMORY, sport_config)
-            reason_prompt = ReasonerPrompt(sport_config, ACTIVATE_ONLY_SCORE)
+    for i, video_path in enumerate(videos):
+        print(f"--- Inicio proceso {i+1}/{len(videos)}: {video_path.name} ---")
+        p = multiprocessing.Process(target=process_single_video, args=(video_path, sport_config))
+        p.start()
+        p.join()
 
-            action_scorer = ActionScorer(
-                str(video_path),
-                DESCRIPTOR_MODEL,
-                REASONER_MODEL,
-                DESCRIPTION_SECONDS,
-                FRAMES_PER_SEGMENT,
-                MAX_PIXEL_SIZE,
-            )
-
-            description = action_scorer.describeVideo(descriptor_prompt)
-            score = action_scorer.reasonDescription(reason_prompt, description)
-
-            mat_index = resolve_real_score_index(video_path)
-            real_score = 0.0
-            if MAT_FILE_PATH and mat_index is not None:
-                real_score = MatProcessor.get_score(MAT_FILE_PATH, mat_index)
-
-            file_processor.add_video_result(str(video_path), description, score, real_score)
-            print(f"Procesado: {video_path.name} | indice MAT: {mat_index} | real score: {real_score}")
+        if p.exitcode != 0:
+            print(f"Error procesando {video_path.name} (exit_code: {p.exitcode})")
 
 if __name__ == "__main__":
     main()
