@@ -14,20 +14,20 @@ SPORT_KEY = "clavados"
 
 PROCESS_MODE = "range"
 
-VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\010.avi"
+VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\012.avi"
 VIDEO_DIRECTORY = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori"
 SUBSET_INDICES = [1, 2, 3]
-START_INDEX = 10
-END_INDEX = 20
+START_INDEX = 20
+END_INDEX = 30
 
-OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_no_memory_2_24.jsonl"
+OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_LLava_no_memory_2_48_224_2030.jsonl"
 MAT_FILE_PATH = r"D:\clase\tft\dataset\diving\diving\diving_overall_scores.mat"
 MAT_SCORE_INDEX = None
 
 DESCRIPTOR_MODEL = DescriptorModels.QWEN2_5VL_3B
 REASONER_MODEL = ReasonerModels.DEEPSEEK_R1_7B
 DESCRIPTION_SECONDS = 2
-FRAMES_PER_SEGMENT = 24
+FRAMES_PER_SEGMENT = 48
 MAX_PIXEL_SIZE = 448
 
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm"}

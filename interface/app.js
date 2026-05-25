@@ -16,7 +16,7 @@ let currentRows = [];
 let currentSource = "";
 let comparisonChart = null;
 
-// Chart.js zoom and pan state
+// ChartJS zoom y pan
 let chartScaleMinX = 0;
 let chartScaleMaxX = 100;
 let chartScaleMinY = 0;
@@ -74,26 +74,9 @@ function parseNumberLike(value) {
 }
 
 function extractPredictedScore(row) {
-  // Prefer numeric fields already present
-  if (row.score_final_num !== undefined && row.score_final_num !== null) {
-    const v = parseNumberLike(row.score_final_num);
-    if (!Number.isNaN(v)) return v;
-  }
-
-  // Try reasoner_json object
-  if (row.reasoner_json && typeof row.reasoner_json === "object") {
-    const r = row.reasoner_json;
-    for (const key of ["score_final", "score", "value", "score_value"]) {
-      if (r[key] !== undefined) {
-        const v = parseNumberLike(r[key]);
-        if (!Number.isNaN(v)) return v;
-      }
-    }
-  }
-
-  // Try score field (string or object)
   if (row.score !== undefined && row.score !== null) {
     if (typeof row.score === "object") {
+      // si objeto
       for (const key of ["score_final", "score", "value"]) {
         if (row.score[key] !== undefined) {
           const v = parseNumberLike(row.score[key]);
@@ -101,18 +84,10 @@ function extractPredictedScore(row) {
         }
       }
     } else {
+      // si string
       const v = parseNumberLike(row.score);
       if (!Number.isNaN(v)) return v;
     }
-  }
-
-  // Fallback: search entire record string
-  const asString = JSON.stringify(row);
-  const m = asString.match(/[+-]?\d+[\.,]?\d*/g);
-  if (m && m.length) {
-    // try last numeric token
-    const v = parseFloat(m[m.length - 1].replace(",", "."));
-    if (!Number.isNaN(v)) return v;
   }
 
   return NaN;
@@ -145,21 +120,7 @@ function renderRows(rows) {
     tdScoreReasoning.appendChild(scorePre);
 
     const tdRealScore = document.createElement("td");
-    const input = document.createElement("input");
-    input.type = "number";
-    input.step = "0.1";
-    input.min = "0";
-    input.max = "10";
-    input.className = "real-score-input";
-    input.placeholder = "0.0 - 10";
-    input.value = storedScores[videoPath] ?? row.real_score ?? "";
-
-    input.addEventListener("input", () => {
-      saveRealScore(videoPath, input.value);
-      buildComparison();
-    });
-
-    tdRealScore.appendChild(input);
+    tdRealScore.textContent = storedScores[videoPath] ?? row.real_score ?? "";
 
     tr.appendChild(tdPath);
     tr.appendChild(tdDescription);

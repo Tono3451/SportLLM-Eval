@@ -27,16 +27,14 @@ class DescriptorPrompt:
             return (
                 "Technical history from previous segments:\n"
                 f"{history_text}\n\n"
-                "Analyze the current frames and continue the technical narration from the last known body state."
-                "Be strict: if execution quality appears inconsistent, explicitly state it."
-                "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown."
+                "Analyze the current frames and continue the technical narration from the last known body state.\n"
+                "Be strict: if execution quality appears inconsistent, explicitly state it.\n"
             )
 
         return (
-            "Analyze the current frames and provide a precise, strict technical narration."
-            "Prioritize objective quality assessment over generic wording."
-            "Be strict: if execution quality appears inconsistent, explicitly state it."
-            "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown."
+            "Analyze the current frames and provide a precise, strict technical narration.\n"
+            "Prioritize objective quality assessment over generic wording.\n"
+            "Be strict: if execution quality appears inconsistent, explicitly state it.\n"
         )
     
     def getSystemPrompt(self):
@@ -49,6 +47,7 @@ class DescriptorPrompt:
             "Describe only what can be inferred from frames. If uncertain, state uncertainty explicitly.\n"
             "Use a strict evaluative tone: highlight deviations, instability, poor control, timing errors, and incomplete execution whenever present.\n"
             "Do not soften technical issues with vague language.\n"
+            "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown.\n"
             "Use this structure:\n"
             "1) Action\n"
             "2) Setup phase\n"
@@ -103,8 +102,10 @@ class ReasonerPrompt:
             f"{common_header}\n"
             "Final output requirement (strict):\n"
             "- Output ONLY the final numeric score.\n"
-            "- Use comma as decimal separator (example: 87,5).\n"
-            "- Do not include labels, explanations, symbols, or extra text."
+            "- Use comma as decimal separator for the score.\n"
+            "- Do not include labels, explanations, symbols, or extra text.\n"
+            "Output format (plain text):\n"
+            f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
         )
 
     def getUserPrompt(self, technical_description):

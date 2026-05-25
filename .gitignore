@@ -1,6 +1,7 @@
 video/
 token/
 results/*
+results/index.json
 
 **/__pycache__/
 *.py[cod]
