@@ -52,7 +52,7 @@ body {
 
 button,
 .file-input-label,
-.results-select {
+.results-select-btn {
   border: 1px solid var(--accent);
   background: var(--accent);
   color: #fff;
@@ -63,9 +63,76 @@ button,
   font-size: 0.92rem;
 }
 
-.results-select {
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.results-select-btn {
   min-width: 260px;
-  appearance: none;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.results-select-btn::after {
+  content: '▼';
+  font-size: 0.8em;
+  margin-left: 10px;
+}
+
+.results-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 100%;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  z-index: 100;
+  white-space: nowrap;
+}
+
+.results-dropdown.hidden {
+  display: none;
+}
+
+.results-dropdown details {
+  margin: 2px 0 2px 14px;
+}
+
+.results-dropdown summary {
+  cursor: pointer;
+  padding: 4px;
+  user-select: none;
+  font-weight: 600;
+  color: var(--accent);
+  border-radius: 4px;
+}
+
+.results-dropdown summary:hover {
+  background: #f0ebe2;
+}
+
+.results-dropdown .file-item {
+  margin: 2px 0 2px 14px;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background 0.1s;
+}
+
+.results-dropdown .file-item:hover,
+.results-dropdown .file-item.selected {
+  background: #e6e0d4;
+  color: var(--accent);
+  font-weight: bold;
 }
 
 button:hover,

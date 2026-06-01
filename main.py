@@ -17,10 +17,10 @@ PROCESS_MODE = "range"
 VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\012.avi"
 VIDEO_DIRECTORY = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori"
 SUBSET_INDICES = [1, 2, 3]
-START_INDEX = 20
-END_INDEX = 30
+START_INDEX = 107
+END_INDEX = 117
 
-OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados_LLava_no_memory_2_48_224_2030.jsonl"
+OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados\DS7\2_48_224_nomemory\1_107_117.jsonl"
 MAT_FILE_PATH = r"D:\clase\tft\dataset\diving\diving\diving_overall_scores.mat"
 MAT_SCORE_INDEX = None
 
@@ -28,7 +28,7 @@ DESCRIPTOR_MODEL = DescriptorModels.QWEN2_5VL_3B
 REASONER_MODEL = ReasonerModels.DEEPSEEK_R1_7B
 DESCRIPTION_SECONDS = 2
 FRAMES_PER_SEGMENT = 48
-MAX_PIXEL_SIZE = 448
+MAX_PIXEL_SIZE = 224
 
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm"}
 

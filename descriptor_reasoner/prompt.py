@@ -48,14 +48,6 @@ class DescriptorPrompt:
             "Use a strict evaluative tone: highlight deviations, instability, poor control, timing errors, and incomplete execution whenever present.\n"
             "Do not soften technical issues with vague language.\n"
             "IMPORTANT: Describe ONLY what is directly visible in the provided frames. Do NOT invent or describe phases that are not shown.\n"
-            "Use this structure:\n"
-            "1) Action\n"
-            "2) Setup phase\n"
-            "3) Execution/flight phase\n"
-            "4) Recovery/landing phase\n"
-            "5) Quality issues and deviations from ideal execution\n"
-            "6) Key measurable cues (angles, rotation, balance, timing when possible)\n"
-            "7) Difficulty of the action\n"
             "If visual evidence is weak, explicitly mark confidence as low and explain why."
         )
     

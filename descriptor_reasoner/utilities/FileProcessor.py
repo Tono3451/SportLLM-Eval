@@ -2,8 +2,6 @@ import json
 from pathlib import Path
 from typing import Any, Dict, TextIO
 
-from descriptor_reasoner.utilities.ResultsIndexProcessor import ResultsIndexProcessor
-
 
 class FileProcessor:
 	def __init__(self, file_path: str):
@@ -34,7 +32,6 @@ class FileProcessor:
 
 		self.file_handle.write(json.dumps(record, ensure_ascii=False) + "\n")
 		self.file_handle.flush()
-		ResultsIndexProcessor.write_index(str(self.file_path.parent))
 		return record
 
 	def close(self) -> None:

@@ -1,7 +1,8 @@
 const statusEl = document.getElementById("status");
 const bodyEl = document.getElementById("results-body");
 const fileInputEl = document.getElementById("file-input");
-const resultsSelectEl = document.getElementById("results-select");
+const resultsDropdownBtn = document.getElementById("results-select-btn");
+const resultsDropdown = document.getElementById("results-dropdown");
 const reloadResultsBtn = document.getElementById("reload-results");
 const exportBtn = document.getElementById("export-real-scores");
 const exportComparisonBtn = document.getElementById("export-comparison");
@@ -44,7 +45,7 @@ function saveRealScore(videoPath, value) {
 }
 
 function normalizeResultPath(fileName) {
-  return `../results/${fileName}`;
+  return `/results/${fileName}`;
 }
 
 function parseJsonl(text) {
@@ -137,38 +138,104 @@ function renderRows(rows) {
 }
 
 async function loadDefaultJsonl() {
-  setStatus("Cargando indice de resultados...");
+  setStatus("Cargando resultados al vuelo...");
   try {
-    const response = await fetch("../results/index.json", { cache: "no-store" });
+    const response = await fetch("/api/results", { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
 
     const files = await response.json();
-    resultsSelectEl.innerHTML = "";
+    resultsDropdown.innerHTML = "";
 
     if (!Array.isArray(files) || files.length === 0) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No hay archivos en results";
-      resultsSelectEl.appendChild(option);
+      resultsDropdownBtn.textContent = "No hay archivos en results";
       setStatus("No se encontraron archivos JSONL en results");
       return;
     }
 
+    // Construir arbol de directorios
+    const rootTree = { files: [], children: {} };
     files.forEach((file) => {
-      const option = document.createElement("option");
-      option.value = normalizeResultPath(file.file_name);
-      option.textContent = file.label || file.file_name;
-      resultsSelectEl.appendChild(option);
+      const parts = file.file_name.split("/");
+      const fileName = parts.pop();
+      let currentDir = rootTree;
+      parts.forEach(part => {
+        if (!currentDir.children[part]) currentDir.children[part] = { files: [], children: {} };
+        currentDir = currentDir.children[part];
+      });
+      currentDir.files.push({ ...file, baseName: fileName });
     });
 
-    resultsSelectEl.value = resultsSelectEl.options[0].value;
-    await loadJsonlFromUrl(resultsSelectEl.value);
+    let firstFileUrl = null;
+    let firstFileName = null;
+
+    // Renderizar recursivamente
+    function renderTree(node, container) {
+      // Carpetas
+      for (const dirName of Object.keys(node.children).sort()) {
+        const details = document.createElement("details");
+        details.open = false; // Puedes cambiar a true si quieres que se expanda por defecto
+        const summary = document.createElement("summary");
+        summary.textContent = `📁 ${dirName}`;
+        details.appendChild(summary);
+        renderTree(node.children[dirName], details);
+        container.appendChild(details);
+      }
+      
+      // Archivos
+      for (const f of node.files.sort((a,b) => a.baseName.localeCompare(b.baseName))) {
+        const item = document.createElement("div");
+        item.className = "file-item";
+        item.textContent = `📄 ${f.baseName.replace(".jsonl", "")}`;
+        item.dataset.url = normalizeResultPath(f.file_name);
+        item.dataset.name = f.baseName.replace(".jsonl", "");
+        
+        if (!firstFileUrl) {
+          firstFileUrl = item.dataset.url;
+          firstFileName = item.dataset.name;
+        }
+
+        item.addEventListener("click", () => {
+          resultsDropdownBtn.textContent = item.dataset.name;
+          resultsDropdown.classList.add("hidden");
+          // Desmarcar todos y marcar el actual
+          document.querySelectorAll(".file-item.selected").forEach(el => el.classList.remove("selected"));
+          item.classList.add("selected");
+          loadJsonlFromUrl(item.dataset.url).catch(err => setStatus(`Error: ${err.message}`));
+        });
+        container.appendChild(item);
+      }
+    }
+
+    renderTree(rootTree, resultsDropdown);
+
+    if (firstFileUrl) {
+      resultsDropdownBtn.textContent = firstFileName;
+      const firstItemElement = resultsDropdown.querySelector(`.file-item[data-url="${firstFileUrl}"]`);
+      if (firstItemElement) firstItemElement.classList.add("selected");
+      await loadJsonlFromUrl(firstFileUrl);
+    } else {
+      resultsDropdownBtn.textContent = "Seleccionar archivo...";
+    }
+
   } catch (err) {
     setStatus(`Error al cargar indice: ${err.message}`);
   }
 }
+
+resultsDropdownBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  resultsDropdown.classList.toggle("hidden");
+});
+
+resultsDropdown.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+document.addEventListener("click", () => {
+  resultsDropdown.classList.add("hidden");
+});
 
 async function loadJsonlFromUrl(url) {
   if (!url) {
@@ -186,19 +253,6 @@ async function loadJsonlFromUrl(url) {
   const rows = parseJsonl(text);
   renderRows(rows);
 }
-
-resultsSelectEl.addEventListener("change", async (event) => {
-  const url = event.target.value;
-  if (!url) {
-    return;
-  }
-
-  try {
-    await loadJsonlFromUrl(url);
-  } catch (err) {
-    setStatus(`Error al cargar archivo: ${err.message}`);
-  }
-});
 
 fileInputEl.addEventListener("change", async (event) => {
   const file = event.target.files?.[0];

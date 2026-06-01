@@ -14,9 +14,10 @@
     </header>
 
     <section class="toolbar">
-      <select id="results-select" class="results-select">
-        <option value="">Cargando archivos...</option>
-      </select>
+      <div class="custom-select-wrapper">
+        <button id="results-select-btn" class="results-select-btn">Cargando archivos...</button>
+        <div id="results-dropdown" class="results-dropdown hidden"></div>
+      </div>
       <label class="file-input-label" for="file-input">Abrir JSONL...</label>
       <input id="file-input" type="file" accept=".jsonl,.txt" />
       <button id="reload-results" type="button">Recargar lista</button>
