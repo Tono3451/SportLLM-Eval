@@ -9,16 +9,20 @@ def reasoner(prompt, description):
     print(Fore.GREEN + f"Generando puntuación (Esto puede tardar varios segundos ...)")
     start_time=time.perf_counter()
     response = ollama.chat(
-        model='qwen3.5:9b',
+        model='qwen3:8b',
         messages=[
             {'role': 'system', 'content': prompt.getSystemPrompt()},
             {'role': 'user', 'content': prompt.getUserPrompt(description)}
         ],
         think=True,
         options={
-            "temperature": 0.1
+            "temperature": 0.1,
+
+            'repeat_penalty': 1.2,
+            'repeat_last_n': 256,
         }
     )
+
 
     end_time=time.perf_counter()
 

@@ -10,18 +10,18 @@ import re
 import multiprocessing
 
 # ===== Zona de opciones =====
-SPORT_KEY = "clavados"
+SPORT_KEY = "salto_potro"
 
 PROCESS_MODE = "range"
 
-VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\012.avi"
-VIDEO_DIRECTORY = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori"
+VIDEO_PATH = r"D:\clase\tft\dataset\diving\diving\diving_samples_len_ori\107.avi"
+VIDEO_DIRECTORY = r"D:\clase\tft\dataset\aqa\AQA-7\Actions\gym_vault"
 SUBSET_INDICES = [1, 2, 3]
-START_INDEX = 107
-END_INDEX = 117
+START_INDEX = 1
+END_INDEX = 10
 
-OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\clavados\DS7\2_48_224_nomemory\1_107_117.jsonl"
-MAT_FILE_PATH = r"D:\clase\tft\dataset\diving\diving\diving_overall_scores.mat"
+OUTPUT_FILE = r"C:\Users\Tono3451\tft-pruebas\results\salto_potro\DS7\2_48_224_nomemory\7_1_10.jsonl"
+MAT_FILE_PATH = r"D:\clase\tft\dataset\aqa\AQA-7\Split_4\scores_gymvault_matlab.mat"
 MAT_SCORE_INDEX = None
 
 DESCRIPTOR_MODEL = DescriptorModels.QWEN2_5VL_3B
@@ -33,7 +33,7 @@ MAX_PIXEL_SIZE = 224
 VIDEO_EXTENSIONS = {".mp4", ".mkv", ".avi", ".mov", ".webm"}
 
 ACTIVATE_MEMORY = False
-ACTIVATE_ONLY_SCORE = True
+ACTIVATE_ONLY_SCORE = False
 # ===== Zona de opciones =====
 
 def extract_video_index(video_path: Path) -> int | None:

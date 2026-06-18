@@ -12,22 +12,28 @@ def description(prompt, video_path, maxSizePixel, num_frames=8, start_frame=0, e
     print(Fore.BLUE + f"Generando respuesta: numero de frames {num_frames} (Esto puede tardar varios segundos ...)")
     start_time=time.perf_counter()
     response = ollama.chat(
-        model='qwen2.5vl:3b',
-        messages=[
-            {
-                'role': 'system',
-                'content': prompt.getSystemPrompt()
-            },
-            {
-                'role': 'user',
-                'content': prompt.getUserPrompt(),
-                'images': frames
-            }
-        ],
-        options={
-            'num_ctx': 10240
+    model='qwen2.5vl:3b',
+    messages=[
+        {
+            'role': 'system',
+            'content': prompt.getSystemPrompt()
+        },
+        {
+            'role': 'user',
+            'content': prompt.getUserPrompt(),
+            'images': frames
         }
-    )
+    ],
+    options={
+        'temperature': 0.7,
+        'top_p': 0.9,
+
+        'repeat_penalty': 1.2,
+        'repeat_last_n': 256,
+
+        'num_predict': 250
+    }
+)
 
     end_time=time.perf_counter()
 

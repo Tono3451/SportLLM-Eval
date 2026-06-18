@@ -199,7 +199,6 @@ async function loadDefaultJsonl() {
         item.addEventListener("click", () => {
           resultsDropdownBtn.textContent = item.dataset.name;
           resultsDropdown.classList.add("hidden");
-          // Desmarcar todos y marcar el actual
           document.querySelectorAll(".file-item.selected").forEach(el => el.classList.remove("selected"));
           item.classList.add("selected");
           loadJsonlFromUrl(item.dataset.url).catch(err => setStatus(`Error: ${err.message}`));

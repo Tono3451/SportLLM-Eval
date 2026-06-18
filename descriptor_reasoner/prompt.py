@@ -58,6 +58,7 @@ class ReasonerPrompt:
 
     def getSystemPrompt(self):
         max_score = self.sport_config.max_score
+        score_focus = self.sport_config.score_focus
         criteria_weights = self.sport_config.criteria_weights
         criteria_line = ""
         if criteria_weights:
@@ -67,11 +68,15 @@ class ReasonerPrompt:
             )
             criteria_line = f"Criteria weights: {formatted_weights}.\n"
 
+        max_line = f"Max score: {max_score}.\n" if (max_score is not None and max_score != 0) else ""
+        score_focus_line = f"Score instructions: {self.sport_config.score_focus}.\n" if (score_focus is not None) else ""
+
         common_header = (
             "You are an elite technical sports judge.\n"
             f"Sport: {self.sport_config.display_name} ({self.sport_config.key}).\n"
-            f"Max score: {max_score}.\n"
+            + max_line +
             f"{criteria_line}"
+            + score_focus_line +            
             "Scoring strictness rules:\n"
             "- Score holistically from the description quality and technical evidence, not from a fixed fault checklist.\n"
             "- Be demanding: near-maximum scores are only for clearly exceptional execution across all phases.\n"
@@ -80,13 +85,14 @@ class ReasonerPrompt:
             "- Keep the scoring realistic and discriminative across average, good, and excellent performances."
         )
 
+        final_score = f"- FINAL SCORE: one number from 0.0 to {max_score}\n" if max_score != 0 else "FINAL SCORE: score number\n"
+
         if not self.score_only:
             return (
                 f"{common_header}\n"
                 "Output format (plain text):\n"
-                "- ASSESSMENT BY PHASE: short bullets for setup, execution/flight, and recovery/landing\n"
+                + final_score +
                 "- SCORING RATIONALE: concise explanation of how the observed quality led to the score\n"
-                f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
                 "- JUSTIFICATION: one concise technical paragraph"
             )
 
@@ -97,7 +103,7 @@ class ReasonerPrompt:
             "- Use comma as decimal separator for the score.\n"
             "- Do not include labels, explanations, symbols, or extra text.\n"
             "Output format (plain text):\n"
-            f"- FINAL SCORE: one number from 0.0 to {max_score}\n"
+            + final_score
         )
 
     def getUserPrompt(self, technical_description):
